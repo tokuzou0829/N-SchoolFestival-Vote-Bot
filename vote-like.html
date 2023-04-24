@@ -1,0 +1,158 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好みの作品を応援しよう！</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<style>
+    body {
+}
+</style>
+</head>
+<body>
+    <div class="modal" tabindex="-1" id="my-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">注意</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>このサイトは磁石祭2023の内部APIを使用しているため使用は自己責任にてお願いします。またこのサイトはプログラミンの練習のために作成されました。</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="mb-3" style="margin:20px">
+        <label for="article_url" class="form-label">URL</label>
+        <input type="text" class="form-control" id="article_url" placeholder="https://nnn.ed.jp/school_festival/plan/#ex-uhskt0gzzp">
+        <div id="article_url_help" class="form-text">磁石祭の作品のURLを入力してください</div>
+    </div>
+    <div style="text-align: center;">
+        <button class="btn btn-primary" onclick="votestart()" id="votestart">投票 <i class="fa-solid fa-check-to-slot"></i></button>
+        <button class="btn btn-primary" onclick="voteend()" style="display: none;" id="voteend">停止 <i class="fa-solid fa-check-to-slot"></i></button>
+        <button class="btn btn-danger" onclick="likestart()" id="likestart">いいね <i class="fa-solid fa-heart"></i></button>
+        <button class="btn btn-danger" onclick="likeend()" style="display: none;" id="likeend">停止 <i class="fa-solid fa-check-to-slot"></i></button>
+    </div>
+    <p style="text-align: center;">合計(いいね・投票)で<span id="count_view">0</span>回応援しました！</p>
+    <script src="https://kit.fontawesome.com/cabd2f509a.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        window.onload = function() {
+            // HTML要素を取得
+            const myModal = document.getElementById('my-modal');
+
+            // モーダルを開く
+            const bootstrapModal = new bootstrap.Modal(myModal);
+            bootstrapModal.show();
+        };
+        const headers = {
+            "x-api-key": "3r4BhZR6j8Jz33QYyZJtB9NvATs8de"
+        };
+        var count=0;
+        function generateRandomString(length) {
+            return Math.random().toString(32).substring(2)
+        }
+        function getExIdFromUrl(url) {
+            const match = /#ex-(\w+)/.exec(url);
+            return match ? match[1] : null;
+        }
+        function votestart(){
+            document.getElementById("votestart").style.display="none";
+            document.getElementById("voteend").style.display=null;
+            const url = "https://nnnfestival-api.backend.junni.dev/api/v1/votes";
+            const articleId = getExIdFromUrl(document.getElementById("article_url").value);
+            vote = setInterval(() => {
+                const mail = generateRandomString(10) + "@n-jr.jp";
+                console.log(mail);
+                const json_data = {
+                    "articleId": articleId,
+                    "categoryId": "A",
+                    "mailaddress": mail
+                };
+                axios.post(url, json_data, { headers })
+                    .then(response => {
+                        console.log(response.status);
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                const mail2 = generateRandomString(10) + "@n-jr.jp";
+                console.log(mail2);
+                const json_data2 = {
+                    "articleId": articleId,
+                    "categoryId": "B",
+                    "mailaddress": mail2
+                };
+                axios.post(url, json_data2, { headers })
+                    .then(response => {
+                        console.log(response.status);
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                const mail3 = generateRandomString(10) + "@n-jr.jp";
+                console.log(mail3);
+                const json_data3 = {
+                    "articleId": articleId,
+                    "categoryId": "C",
+                    "mailaddress": mail3
+                };
+                axios.post(url, json_data3, { headers })
+                    .then(response => {
+                        console.log(response.status);
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                count=count+3;
+                countchange();
+            }, 1000);
+        }
+        function voteend(){
+            document.getElementById("votestart").style.display=null;
+            document.getElementById("voteend").style.display="none";
+            clearInterval(vote);
+        }
+
+
+        function likestart(){
+            document.getElementById("likestart").style.display="none";
+            document.getElementById("likeend").style.display=null;
+            const url = "https://nnnfestival-api.backend.junni.dev/api/v1/favorites";
+            const articleId = getExIdFromUrl(document.getElementById("article_url").value);
+            like = setInterval(() => {
+                const json_data = {
+                    "articleId": articleId,
+                };
+                axios.post(url, json_data, { headers })
+                    .then(response => {
+                        console.log(response.status);
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                    count=count+1;
+                    countchange();
+            }, 300);
+        }
+        function likeend(){
+            document.getElementById("likestart").style.display=null;
+            document.getElementById("likeend").style.display="none";
+            clearInterval(like);
+        }
+        function countchange(){
+            document.getElementById("count_view").innerHTML=count;
+        }
+    </script>
+</body>
+</html>
